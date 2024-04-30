@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
+import pdb
 
+pdb.run('mymodule.test()')
 class Birthday:
     def __init__(self, day, month, year):
         self.day = int(day)
@@ -106,6 +108,7 @@ def main():
                 print("No upcoming birthdays within the next week.")
         else:
             print("Invalid command.")
+            
 
 if __name__ == "__main__":
     main()
