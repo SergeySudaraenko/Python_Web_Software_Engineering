@@ -1,7 +1,9 @@
 from datetime import datetime, timedelta
 import pdb
 
-pdb.run('mymodule.test()')
+pdb.run("mymodule.test()")
+
+
 class Birthday:
     def __init__(self, day, month, year):
         self.day = int(day)
@@ -17,15 +19,18 @@ class Birthday:
         next_week = today + timedelta(days=7)
         return today <= birthday_date <= next_week
 
+
 def parse_input(user_input):
     parts = user_input.split()
     command = parts[0].lower()
     args = parts[1:]
     return command, args
 
+
 def add_contact(username, phone, contacts):
     contacts[username] = phone
     return f"Contact {username} added."
+
 
 def change_contact(username, new_phone, contacts):
     if username in contacts:
@@ -34,9 +39,11 @@ def change_contact(username, new_phone, contacts):
     else:
         return f"Contact {username} not found."
 
+
 def add_birthday(username, birthday, birthdays):
     birthdays[username] = birthday
     return f"Birthday added for {username}."
+
 
 def show_birthday(username, birthdays):
     if username in birthdays:
@@ -44,23 +51,28 @@ def show_birthday(username, birthdays):
     else:
         return f"No birthday found for {username}."
 
+
 def get_phone(username, contacts):
     if username in contacts:
         return f"The phone number for {username} is {contacts[username]}."
     else:
         return f"Contact {username} not found."
 
+
 def show_all_contacts(contacts):
     if contacts:
-        return "\n".join([f"{username}: {phone}" for username, phone in contacts.items()])
+        return "\n".join(
+            [f"{username}: {phone}" for username, phone in contacts.items()]
+        )
     else:
         return "No contacts available."
+
 
 def main():
     contacts = {}
     birthdays = {}
     print("Welcome to the assistant bot!")
-    
+
     while True:
         user_input = input("Enter a command: ")
         command, args = parse_input(user_input)
@@ -91,7 +103,9 @@ def main():
             if len(args) == 3:
                 print(add_birthday(args[0], Birthday(*args[1:]), birthdays))
             else:
-                print("Invalid command. Usage: add-birthday <username> <day> <month> <year>")
+                print(
+                    "Invalid command. Usage: add-birthday <username> <day> <month> <year>"
+                )
         elif command == "show-birthday":
             if len(args) == 1:
                 print(show_birthday(args[0], birthdays))
@@ -99,7 +113,11 @@ def main():
                 print("Invalid command. Usage: show-birthday <username>")
         elif command == "birthdays":
             today = datetime.now()
-            upcoming_birthdays = [username for username, birthday in birthdays.items() if birthday.is_within_week()]
+            upcoming_birthdays = [
+                username
+                for username, birthday in birthdays.items()
+                if birthday.is_within_week()
+            ]
             if upcoming_birthdays:
                 print("Upcoming birthdays:")
                 for username in upcoming_birthdays:
@@ -108,7 +126,7 @@ def main():
                 print("No upcoming birthdays within the next week.")
         else:
             print("Invalid command.")
-            
+
 
 if __name__ == "__main__":
     main()
