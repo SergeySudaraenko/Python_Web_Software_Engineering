@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "hw2-1"
+version = "0.1.0"
+description = ""
+authors = ["Sergey"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+aiosqlite = "^0.20.0"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
