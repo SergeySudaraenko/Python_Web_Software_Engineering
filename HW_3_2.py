@@ -1,36 +1,9 @@
-import time
-import multiprocessing
-
-def factorize_sync(number):
-    factors = []
-    for i in range(1, number + 1):
-        if number % i == 0:
-            factors.append(i)
-    return factors
-
-def factorize_multi(number):
-    factors = []
-    with multiprocessing.Pool() as pool:
-        for i in range(1, number + 1):
-            if number % i == 0:
-                factors.append(i)
-    return factors
-
-def measure_time(func, *args):
-    start_time = time.time()
-    result = func(*args)
-    end_time = time.time()
-    return result, end_time - start_time
-
-if __name__ == "__main__":
-    numbers = [128, 255, 99999, 10651060]
-
-    for num in numbers:
-        print(f"Number: {num}")
-        result_sync, time_sync = measure_time(factorize_sync, num)
-        print(f"Synchronous: {result_sync}, Time: {time_sync}")
-
-        result_multi, time_multi = measure_time(factorize_multi, num)
-        print(f"Multiprocessing: {result_multi}, Time: {time_multi}")
-
-        print()
+GET /other-19 HTTP/1.1
+Host: www.example.com
+User-Agent: Mozilla/5.0 (Windows; U; Windows NT 6.0; ru; rv:1.9.1.5) Gecko/20091102 Firefox/3.5.5 (.NET CLR 3.5.30729)
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: ru,en-us;q=0.7,en;q=0.3
+Accept-Encoding: gzip,deflate
+Accept-Charset: windows-1251,utf-8;q=0.7,*;q=0.7
+Keep-Alive: 300
+Connection: keep-alive
