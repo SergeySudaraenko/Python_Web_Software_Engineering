@@ -9,14 +9,12 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 
-# Перевірка наявності каталогу та файлу
 if not os.path.exists('storage'):
     os.makedirs('storage')
 if not os.path.exists('storage/data.json'):
     with open('storage/data.json', 'w') as f:
         json.dump({}, f)
 
-# Вказуємо шлях до папки з шаблонами HTML
 templates_path = os.path.join(os.path.dirname(__file__), 'templates')
 
 @app.route('/')
@@ -44,14 +42,11 @@ def run_flask():
     socketio.run(app, port=3000)
 
 def run_socket_server():
-    # Реалізація Socket серверу за допомогою threading або concurrent.futures
     pass
 
 if __name__ == '__main__':
-    # Запускаємо Flask у новому потоці
     flask_thread = threading.Thread(target=run_flask)
     flask_thread.start()
-    # Запускаємо Socket сервер у новому потоці
     socket_thread = threading.Thread(target=run_socket_server)
     socket_thread.start()
 
