@@ -4,10 +4,8 @@ import random
 from datetime import datetime, timedelta
 
 def create_database():
-   
     conn = sqlite3.connect('university.db')
     cursor = conn.cursor()
-    
     
     create_tables_script = '''
     CREATE TABLE IF NOT EXISTS students (
@@ -45,38 +43,28 @@ def create_database():
     );
     '''
 
-    
     cursor.executescript(create_tables_script)
-    
     conn.close()
 
 def populate_database():
-    
     fake = Faker()
-
-   
     conn = sqlite3.connect('university.db')
     cursor = conn.cursor()
 
-   
     groups = [('Group 1',), ('Group 2',), ('Group 3',)]
     cursor.executemany("INSERT INTO groups (name) VALUES (?)", groups)
 
-   
     teachers = [(fake.name(),) for _ in range(5)]
     cursor.executemany("INSERT INTO teachers (name) VALUES (?)", teachers)
 
-  
     subjects = [(fake.word(), random.randint(1, 5)) for _ in range(8)]
     cursor.executemany("INSERT INTO subjects (name, teacher_id) VALUES (?, ?)", subjects)
 
-   
     for _ in range(random.randint(30, 50)):
         student_name = fake.name()
         group_id = random.randint(1, 3)
         cursor.execute("INSERT INTO students (name, group_id) VALUES (?, ?)", (student_name, group_id))
         student_id = cursor.lastrowid
-        
         
         for subject_id in range(1, 9):
             for _ in range(random.randint(10, 20)):
