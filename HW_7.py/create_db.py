@@ -1,10 +1,11 @@
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.exc import OperationalError
 from models import Base
 
-
-engine = create_engine('sqlite:///your_database.db')
-
+engine = create_engine('sqlite:///database.db')
 
 
-print("Successfully.")
+Base.metadata.create_all(engine)
+    
+
+

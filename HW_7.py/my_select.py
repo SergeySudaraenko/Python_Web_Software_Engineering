@@ -1,7 +1,7 @@
 from sqlalchemy import func
 from sqlalchemy.orm import sessionmaker
 from models import Student, Subject, Grade, Group, Teacher
-from database_engine import engine
+from create_db import engine
 
 
 Session = sessionmaker(bind=engine)
