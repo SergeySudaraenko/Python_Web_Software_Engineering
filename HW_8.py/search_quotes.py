@@ -3,7 +3,7 @@ from models.author import Author
 from models.quote import Quote
 
 
-connect('my_database', host='mongodb+srv://<Goituser>:<567234>@cluster0.ekxs7ce.mongodb.net')
+connect(host='mongodb+srv://<Goituser>:<567234>@cluster0.ekxs7ce.mongodb.net')
 
 
 def search_quotes(query):
