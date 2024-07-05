@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Top Tags</h1>
+    <ul>
+        {% for tag in tags %}
+            <li><a href="{% url 'tag-search' tag.name %}">{{ tag.name }}</a> ({{ tag.num_quotes }} quotes)</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

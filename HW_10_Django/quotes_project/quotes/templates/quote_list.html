@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Quotes</h1>
+    <ul>
+        {% for quote in quotes %}
+            <li>{{ quote.text }} - <a href="{% url 'author-detail' quote.author.id %}">{{ quote.author.name }}</a></li>
+        {% endfor %}
+    </ul>
+    <div>
+        {% if quotes.has_previous %}
+            <a href="?page={{ quotes.previous_page_number }}">Previous</a>
+        {% endif %}
+        {% if quotes.has_next %}
+            <a href="?page={{ quotes.next_page_number }}">Next</a>
+        {% endif %}
+    </div>
+{% endblock %}
