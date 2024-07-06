@@ -1,12 +1,13 @@
+
 from django import forms
-from .models import Author, Quote
+from .models import Author, Quote, Tag
 
 class AuthorForm(forms.ModelForm):
     class Meta:
         model = Author
-        fields = ['name']
+        fields = ['name', 'bio']
 
 class QuoteForm(forms.ModelForm):
     class Meta:
         model = Quote
-        fields = ['author', 'text']
+        fields = ['text', 'author', 'tags']

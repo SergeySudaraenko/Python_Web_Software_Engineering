@@ -1,0 +1,13 @@
+<!-- quotes/templates/quotes/tag_quotes.html -->
+{% extends 'quotes/base.html' %}
+
+{% block title %}Quotes tagged with {{ tag.name }}{% endblock %}
+
+{% block content %}
+    <h2>Quotes tagged with {{ tag.name }}</h2>
+    <ul>
+        {% for quote in quotes %}
+            <li>{{ quote.text }} - {{ quote.author.name }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

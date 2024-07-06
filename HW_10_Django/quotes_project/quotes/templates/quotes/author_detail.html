@@ -1,0 +1,16 @@
+<!-- quotes/templates/quotes/author_detail.html -->
+{% extends 'quotes/base.html' %}
+
+{% block title %}{{ author.name }}{% endblock %}
+
+{% block content %}
+    <h2>{{ author.name }}</h2>
+    <p>{{ author.bio }}</p>
+
+    <h3>Quotes by {{ author.name }}</h3>
+    <ul>
+        {% for quote in quotes %}
+            <li>{{ quote.text }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
