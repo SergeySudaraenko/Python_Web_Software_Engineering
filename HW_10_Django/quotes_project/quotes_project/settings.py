@@ -1,12 +1,16 @@
 import os
 
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 
 SECRET_KEY = 'your_secret_key_here'
 
 DEBUG = True
 
+
 ALLOWED_HOSTS = ['*']
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -17,8 +21,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'quotes',
     'users',
-    'quotes_project',  
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -30,7 +34,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
 ROOT_URLCONF = 'quotes_project.urls'
+
 
 TEMPLATES = [
     {
@@ -48,7 +54,9 @@ TEMPLATES = [
     },
 ]
 
+
 WSGI_APPLICATION = 'quotes_project.wsgi.application'
+
 
 DATABASES = {
     'default': {
@@ -57,9 +65,13 @@ DATABASES = {
         'USER': 'your_db_username',
         'PASSWORD': 'your_db_password',
         'HOST': 'localhost',
-        'PORT': '',
+        'PORT': '5432',
+        'OPTIONS': {
+            'options': '-c client_encoding=UTF8',
+        }
     },
 }
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -76,6 +88,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -86,11 +99,5 @@ USE_L10N = True
 
 USE_TZ = True
 
-STATIC_URL = '/static/'
 
-# Optional: If you have custom settings or environment variables to load
-# Load additional settings if needed
-# try:
-#     from .local_settings import *
-# except ImportError:
-#     pass
+STATIC_URL = '/static/'
