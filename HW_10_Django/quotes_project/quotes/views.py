@@ -1,53 +1,32 @@
-from pyexpat import model
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Author, Quote, Tag
-from .forms import AuthorForm, QuoteForm
-from .scraper import scrape_quotes
-
-
-@login_required
-def scrape_data(request):
-    scrape_quotes()
-    return redirect('index')
-
+from .models import Author, Quote
 
 def index(request):
     quotes = Quote.objects.all()
-    tags = Tag.objects.annotate(num_quotes=model.Count('quotes')).order_by('-num_quotes')[:10]
-    return render(request, 'quotes/index.html', {'quotes': quotes, 'tags': tags})
+    return render(request, 'quotes/index.html', {'quotes': quotes})
 
 def author_detail(request, author_id):
-    author = get_object_or_404(Author, id=author_id)
+    author = Author.objects.get(pk=author_id)
     quotes = Quote.objects.filter(author=author)
     return render(request, 'quotes/author_detail.html', {'author': author, 'quotes': quotes})
 
 @login_required
 def add_author(request):
     if request.method == 'POST':
-        form = AuthorForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('index')
-    else:
-        form = AuthorForm()
-    return render(request, 'quotes/add_author.html', {'form': form})
+        name = request.POST['name']
+        author = Author.objects.create(name=name)
+        return redirect('author_detail', author_id=author.id)
+    return render(request, 'quotes/add_author.html')
 
 @login_required
 def add_quote(request):
     if request.method == 'POST':
-        form = QuoteForm(request.POST)
-        if form.is_valid():
-            quote = form.save(commit=False)
-            quote.user = request.user
-            quote.save()
-            form.save_m2m()
-            return redirect('index')
-    else:
-        form = QuoteForm()
-    return render(request, 'quotes/add_quote.html', {'form': form})
-
-def tag_quotes(request, tag_name):
-    tag = get_object_or_404(Tag, name=tag_name)
-    quotes = Quote.objects.filter(tags=tag)
-    return render(request, 'quotes/tag_quotes.html', {'tag': tag, 'quotes': quotes})
+        author_id = request.POST['author']
+        text = request.POST['text']
+        tags = request.POST['tags']
+        author = Author.objects.get(pk=author_id)
+        quote = Quote.objects.create(author=author, text=text, tags=tags)
+        return redirect('author_detail', author_id=author_id)
+    authors = Author.objects.all()
+    return render(request, 'quotes/add_quote.html', {'authors': authors})

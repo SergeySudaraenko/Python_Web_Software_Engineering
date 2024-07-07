@@ -1,6 +1,6 @@
-
 from django import forms
-from .models import Author, Quote, Tag
+from quotes_project.quotes.models import Quote
+from .models import Author
 
 class AuthorForm(forms.ModelForm):
     class Meta:
