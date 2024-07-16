@@ -8,6 +8,5 @@ class Contact(Base):
     first_name = Column(String, index=True)
     last_name = Column(String, index=True)
     email = Column(String, unique=True, index=True)
-    phone_number = Column(String, index=True)
-    birthday = Column(Date)
-    additional_info = Column(String, nullable=True)
+    phone = Column(String, index=True)
+    birthday = Column(Date, index=True)
