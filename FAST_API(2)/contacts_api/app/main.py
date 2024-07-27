@@ -61,3 +61,5 @@ def delete_contact(contact_id: int, db: Session = Depends(get_db), current_user:
     if db_contact is None:
         raise HTTPException(status_code=404, detail="Contact not found")
     return db_contact
+
+

@@ -1,14 +1,9 @@
-import logging
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
-from passlib.context import CryptContext
 from . import models, schemas
+from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 def get_password_hash(password):
     return pwd_context.hash(password)
@@ -55,4 +50,5 @@ def delete_contact(db: Session, contact_id: int, user_id: int):
         db.delete(db_contact)
         db.commit()
     return db_contact
+
 
