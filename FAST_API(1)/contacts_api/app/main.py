@@ -4,9 +4,14 @@ from typing import List
 from . import models, schemas, crud, utils
 from .database import engine, get_db
 
+
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to the Contacts API"}
 
 @app.post("/contacts/", response_model=schemas.Contact)
 def create_contact(contact: schemas.ContactCreate, db: Session = Depends(get_db)):
@@ -51,3 +56,4 @@ def search_contacts(query: str, db: Session = Depends(get_db)):
 def upcoming_birthdays(db: Session = Depends(get_db)):
     contacts = utils.get_upcoming_birthdays(db)
     return contacts
+
