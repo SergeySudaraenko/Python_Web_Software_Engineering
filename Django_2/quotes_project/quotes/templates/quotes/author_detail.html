@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ author.name }} - My Quotes{% endblock %}
+
+{% block content %}
+    <h1>{{ author.name }}</h1>
+    <h2>Quotes by {{ author.name }}</h2>
+    {% if quotes %}
+        <ul>
+            {% for quote in quotes %}
+                <li>{{ quote.text }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No quotes available for {{ author.name }}.</p>
+    {% endif %}
+{% endblock %}
