@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional
 from datetime import date
 
 class ContactBase(BaseModel):
@@ -17,7 +17,6 @@ class ContactUpdate(ContactBase):
 
 class Contact(ContactBase):
     id: int
-    owner_id: int
 
     class Config:
         orm_mode = True
@@ -30,8 +29,6 @@ class UserCreate(UserBase):
 
 class User(UserBase):
     id: int
-    is_active: bool
-    contacts: List[Contact] = []
 
     class Config:
         orm_mode = True
@@ -39,9 +36,12 @@ class User(UserBase):
 class Token(BaseModel):
     access_token: str
     token_type: str
+    refresh_token: str
 
 class TokenData(BaseModel):
-    email: Optional[str] = None
+    email: str
+
+
 
 
 
