@@ -1,11 +1,10 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordRequestForm
 from typing import List
 from . import models, schemas, crud, auth, database
 from pydantic import EmailStr
-
 
 app = FastAPI()
 
@@ -55,7 +54,8 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     Returns:
         schemas.Token: The generated tokens.
     """
-    return auth.login_user(db, form_data.username, form_data.password)
+    tokens = auth.login_user(db, form_data.username, form_data.password)
+    return {"access_token": tokens["access_token"], "refresh_token": tokens["refresh_token"]}
 
 @app.post("/verify-email/", status_code=200)
 def verify_email(token: str, db: Session = Depends(database.get_db)):

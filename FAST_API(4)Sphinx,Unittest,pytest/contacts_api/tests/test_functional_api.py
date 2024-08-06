@@ -5,11 +5,14 @@ from contacts_api.app.main import app
 client = TestClient(app)
 
 @pytest.fixture
-def token():
-  
-    return "<valid_access_token>"
+def auth_header():
+    response = client.post("/login/", data={"username": "testuser@example.com", "password": "testpassword"})
+    assert response.status_code == 200  
+    data = response.json()
+    assert "access_token" in data  
+    return {"Authorization": f"Bearer {data['access_token']}"}
 
-def test_create_contact(token):
+def test_create_contact(auth_header):
     response = client.post(
         "/contacts/",
         json={
@@ -19,9 +22,12 @@ def test_create_contact(token):
             "phone": "1234567890",
             "birthday": "1990-01-01"
         },
-        headers={"Authorization": f"Bearer {token}"}
+        headers=auth_header
     )
     assert response.status_code == 201
+    assert "id" in response.json()
+
+
 
 
 

@@ -49,7 +49,7 @@ def create_access_token(data: dict, expires_delta: timedelta = timedelta(minutes
     """
     to_encode = data.copy()
     expire = datetime.utcnow() + expires_delta
-    to_encode.update({"exp": expire})
+    to_encode.update({"exp": expire, "sub": data.get("sub")})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 def create_refresh_token(data: dict, expires_delta: timedelta = timedelta(days=7)) -> str:
@@ -107,4 +107,3 @@ def send_password_reset_email(email: str, token: str):
         token (str): The password reset token.
     """
     pass
-

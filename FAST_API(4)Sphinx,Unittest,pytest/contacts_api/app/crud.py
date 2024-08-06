@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
-from .models import Contact, User
+from .models import Contact
 from .schemas import ContactCreate, ContactUpdate
 
 def contact_creation_limit_exceeded(db: Session, user_id: int) -> bool:

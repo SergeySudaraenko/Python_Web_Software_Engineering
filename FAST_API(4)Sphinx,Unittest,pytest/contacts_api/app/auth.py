@@ -1,11 +1,10 @@
 from fastapi import HTTPException, status, Depends
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
 from contacts_api.app.database import SessionLocal
 from .models import User
-from .schemas import UserCreate, Token, TokenData
+from .schemas import UserCreate
 from .utils import send_verification_email, send_password_reset_email, create_access_token, create_refresh_token, verify_password, hash_password, verify_token
-from datetime import datetime, timedelta
+from datetime import timedelta
 from fastapi.security import OAuth2PasswordBearer
 
 
