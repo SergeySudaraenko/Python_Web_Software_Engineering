@@ -23,5 +23,3 @@ class Contact(Base):
     birthday = Column(Date, index=True)
     owner_id = Column(Integer, index=True)  
     created_at = Column(Date, default=func.now())
-
-

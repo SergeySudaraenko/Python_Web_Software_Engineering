@@ -1,34 +1,59 @@
-import unittest
-from app import crud, models, schemas
-from app.database import SessionLocal
-from datetime import date
+import pytest
+from fastapi.testclient import TestClient
+from app.main import app
+from app import models,database
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
-class TestCRUD(unittest.TestCase):
+DATABASE_URL = "sqlite:///./test.db"
 
-    def setUp(self):
-        self.db = SessionLocal()
-        self.user = models.User(email="test@example.com", hashed_password="hashed_password")
-        self.db.add(self.user)
-        self.db.commit()
-        self.contact_data = schemas.ContactCreate(
-            first_name="John",
-            last_name="Doe",
-            email="john.doe@example.com",
-            phone="123456789",
-            birthday=date(1990, 1, 1)
-        )
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = models.Base
 
-    def test_create_contact(self):
-        contact = crud.create_contact(self.db, self.contact_data, self.user.id)
-        self.assertEqual(contact.first_name, self.contact_data.first_name)
+def setup_database():
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
 
-    def test_get_contacts(self):
-        crud.create_contact(self.db, self.contact_data, self.user.id)
-        contacts = crud.get_contacts(self.db, owner_id=self.user.id)
-        self.assertGreater(len(contacts), 0)
+def override_get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
-    def tearDown(self):
-        self.db.close()
+app.dependency_overrides[database.get_db] = override_get_db
+client = TestClient(app)
 
-if __name__ == "__main__":
-    unittest.main()
+@pytest.fixture(scope="module")
+def test_setup():
+    setup_database()
+    yield client
+
+def test_create_contact(test_setup):
+    token = get_access_token(test_setup)
+    response = test_setup.post("/contacts/", json={
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "john.doe@example.com",
+        "phone": "123456789",
+        "birthday": "1990-01-01"
+    }, headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == 201
+
+def test_get_contacts(test_setup):
+    token = get_access_token(test_setup)
+    test_setup.post("/contacts/", json={
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "john.doe@example.com",
+        "phone": "123456789",
+        "birthday": "1990-01-01"
+    }, headers={"Authorization": f"Bearer {token}"})
+    response = test_setup.get("/contacts/", headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == 200
+    assert len(response.json()) > 0
+
+def get_access_token(test_setup):
+    response = test_setup.post("/login/", data={"username": "test@example.com", "password": "testpassword"})
+    return response.json()["access_token"]

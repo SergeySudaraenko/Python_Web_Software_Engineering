@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "./contacts_api/app"
+    ]
+}
