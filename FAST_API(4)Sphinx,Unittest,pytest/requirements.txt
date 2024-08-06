@@ -8,3 +8,4 @@ python-dotenv
 cloudinary
 redis
 psycopg2-binary
+sphinx
