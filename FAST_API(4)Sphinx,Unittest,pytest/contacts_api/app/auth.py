@@ -1,98 +1,126 @@
-from datetime import timedelta
-from fastapi import Depends, HTTPException, status
+from fastapi import HTTPException, Depends
 from sqlalchemy.orm import Session
+from database import SessionLocal
+from .models import User
+from .schemas import UserCreate, Token
+from .utils import RESET_TOKEN_EXPIRE_MINUTES, send_verification_email, send_password_reset_email, create_access_token, create_refresh_token, verify_password, hash_password, verify_token
+from datetime import timedelta
 from fastapi.security import OAuth2PasswordBearer
-
-from . import models, schemas, utils, crud
-from .database import get_db
-
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
-def register_user(db: Session, user: schemas.UserCreate):
+def get_db():
     """
-    Реєстрація нового користувача в системі.
+    Генерує і повертає сесію бази даних.
 
-    :param db: Сесія бази даних.
-    :param user: Дані користувача для реєстрації.
-    :raises HTTPException: Якщо email вже зареєстрований.
-    :return: Створений користувач.
+    Повертає:
+        Generator: Генератор сесії бази даних.
     """
-    if db.query(models.User).filter(models.User.email == user.email).first():
-        raise HTTPException(status_code=400, detail="Email already registered")
-    hashed_password = utils.hash_password(user.password)
-    db_user = models.User(email=user.email, hashed_password=hashed_password)
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+def register_user(db: Session, user: UserCreate):
+    """
+    Реєструє нового користувача в базі даних.
+
+    Аргументи:
+        db (Session): Сесія бази даних.
+        user (UserCreate): Дані користувача для реєстрації.
+
+    Повертає:
+        User: Зареєстрований користувач.
+    """
+    db_user = db.query(User).filter(User.email == user.email).first()
+    if db_user:
+        raise HTTPException(status_code=409, detail="Email already registered")
+    hashed_password = hash_password(user.password)
+    db_user = User(email=user.email, hashed_password=hashed_password, is_verified=False)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
+    verification_token = create_access_token({"sub": user.email}, expires_delta=timedelta(hours=1))
+    send_verification_email(user.email, verification_token)
     return db_user
 
-def login_user(db: Session, email: str, password: str):
+def login_user(db: Session, username: str, password: str):
     """
-    Авторизація користувача та отримання токенів.
+    Увійти в систему з використанням електронної пошти та пароля.
 
-    :param db: Сесія бази даних.
-    :param email: Email користувача.
-    :param password: Пароль користувача.
-    :raises HTTPException: Якщо облікові дані недійсні.
-    :return: Словник з токенами та типом токена.
+    Аргументи:
+        db (Session): Сесія бази даних.
+        username (str): Електронна пошта користувача.
+        password (str): Пароль користувача.
+
+    Повертає:
+        Token: Токени доступу та оновлення.
     """
-    user = db.query(models.User).filter(models.User.email == email).first()
-    if user is None or not utils.verify_password(password, user.hashed_password):
+    db_user = db.query(User).filter(User.email == username).first()
+    if not db_user or not verify_password(password, db_user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    access_token = utils.create_access_token(data={"sub": email})
-    refresh_token = utils.create_refresh_token(data={"sub": email})
-    return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
+    if not db_user.is_verified:
+        raise HTTPException(status_code=403, detail="Email not verified")
+    access_token = create_access_token({"sub": db_user.email})
+    refresh_token = create_refresh_token({"sub": db_user.email})
+    return Token(access_token=access_token, refresh_token=refresh_token, token_type="bearer")
 
 def verify_email(db: Session, token: str):
     """
-    Підтвердження email користувача за допомогою токена.
+    Перевіряє електронну пошту користувача за допомогою токена.
 
-    :param db: Сесія бази даних.
-    :param token: Токен для підтвердження.
-    :raises HTTPException: Якщо токен недійсний.
-    :return: Повідомлення про підтвердження email.
-    """
-    user = db.query(models.User).filter(models.User.verification_token == token).first()
-    if not user:
-        raise HTTPException(status_code=400, detail="Invalid token")
-    user.is_verified = True
-    user.verification_token = None
-    db.commit()
-    return {"message": "Email verified"}
+    Аргументи:
+        db (Session): Сесія бази даних.
+        token (str): Токен для підтвердження електронної пошти.
 
-def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+    Повертає:
+        str: Повідомлення про успішну перевірку.
     """
-    Отримання поточного користувача з бази даних на основі токена.
-
-    :param db: Сесія бази даних.
-    :param token: JWT токен користувача.
-    :raises HTTPException: Якщо не вдалося перевірити облікові дані.
-    :return: Користувач з бази даних.
-    """
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    token_data = utils.verify_token(token, credentials_exception)
-    user = db.query(models.User).filter(models.User.email == token_data.email).first()
+    credentials_exception = HTTPException(status_code=401, detail="Invalid token")
+    token_data = verify_token(token, credentials_exception)
+    user = db.query(User).filter(User.email == token_data.email).first()
     if user is None:
         raise credentials_exception
-    return user
+    user.is_verified = True
+    db.commit()
+    return "Email verified successfully"
 
 def reset_password(db: Session, email: str):
     """
-    Запит на скидання пароля для користувача.
+    Скидає пароль користувача за допомогою електронної пошти.
 
-    :param db: Сесія бази даних.
-    :param email: Email користувача, для якого потрібно скинути пароль.
-    :raises HTTPException: Якщо користувача не знайдено.
-    :return: Повідомлення про те, що лист для скидання пароля відправлено.
+    Аргументи:
+        db (Session): Сесія бази даних.
+        email (str): Електронна пошта користувача для скидання пароля.
+
+    Повертає:
+        str: Повідомлення про успішне скидання пароля.
     """
-    user = db.query(models.User).filter(models.User.email == email).first()
-    if not user:
+    user = db.query(User).filter(User.email == email).first()
+    if user is None:
         raise HTTPException(status_code=404, detail="User not found")
-    reset_token = utils.create_access_token(data={"sub": email}, expires_delta=timedelta(minutes=utils.RESET_TOKEN_EXPIRE_MINUTES))
-    utils.send_password_reset_email(email, reset_token)
-    return {"message": "Password reset email sent"}
+    reset_token = create_access_token({"sub": email}, expires_delta=timedelta(minutes=RESET_TOKEN_EXPIRE_MINUTES))
+    send_password_reset_email(email, reset_token)
+    return "Password reset email sent"
+
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
+    """
+    Отримує поточного користувача з токена.
+
+    Аргументи:
+        token (str): Токен доступу.
+        db (Session): Сесія бази даних.
+
+    Повертає:
+        User: Поточний користувач.
+
+    Викидає:
+        HTTPException: Якщо токен недійсний або користувач не знайдений.
+    """
+    credentials_exception = HTTPException(status_code=401, detail="Invalid credentials")
+    token_data = verify_token(token, credentials_exception)
+    user = db.query(User).filter(User.email == token_data.email).first()
+    if user is None:
+        raise credentials_exception
+    return user
