@@ -4,15 +4,14 @@ from .database import Base
 
 class User(Base):
     """
-    Модель користувача для бази даних.
+    Модель даних користувача.
 
-    Атрибути:
-        id (int): Ідентифікатор користувача.
-        email (str): Електронна пошта користувача.
-        hashed_password (str): Хешований пароль користувача.
-        is_verified (bool): Статус підтвердження електронної пошти.
-        avatar_url (str, optional): URL аватара користувача.
-        verification_token (str, optional): Токен підтвердження електронної пошти.
+    :param id: ID користувача.
+    :param email: Email користувача.
+    :param hashed_password: Хешований пароль.
+    :param is_verified: Статус перевірки email.
+    :param avatar_url: URL аватара користувача.
+    :param verification_token: Токен перевірки email.
     """
     __tablename__ = "users"
 
@@ -25,17 +24,16 @@ class User(Base):
 
 class Contact(Base):
     """
-    Модель контакту для бази даних.
+    Модель даних контакту.
 
-    Атрибути:
-        id (int): Ідентифікатор контакту.
-        first_name (str): Ім'я контакту.
-        last_name (str): Прізвище контакту.
-        email (str): Електронна пошта контакту.
-        phone (str, optional): Телефонний номер контакту.
-        birthday (date, optional): Дата народження контакту.
-        owner_id (int): Ідентифікатор власника контакту.
-        created_at (date): Дата створення контакту.
+    :param id: ID контакту.
+    :param first_name: Ім'я контакту.
+    :param last_name: Прізвище контакту.
+    :param email: Email контакту.
+    :param phone: Телефон контакту.
+    :param birthday: День народження контакту.
+    :param owner_id: ID власника контакту.
+    :param created_at: Дата створення контакту.
     """
     __tablename__ = "contacts"
 

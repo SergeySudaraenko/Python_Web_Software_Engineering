@@ -12,10 +12,14 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 def get_db():
+    """
+    Створює і повертає об'єкт сесії бази даних SQLAlchemy.
+
+    :yield: Об'єкт сесії SQLAlchemy.
+    """
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
-
 

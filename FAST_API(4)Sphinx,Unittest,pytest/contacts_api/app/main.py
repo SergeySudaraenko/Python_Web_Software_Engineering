@@ -1,11 +1,11 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordRequestForm
 from typing import List
 from . import models, schemas, crud, auth, database
 from pydantic import EmailStr
-
+import os
 
 app = FastAPI()
 

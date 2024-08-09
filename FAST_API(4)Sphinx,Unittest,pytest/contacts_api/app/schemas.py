@@ -4,11 +4,10 @@ from datetime import date
 
 class UserBase(BaseModel):
     """
-    Основна схема для користувача.
+    Основна схема даних користувача.
 
-    Атрибути:
-        email (EmailStr): Електронна пошта користувача.
-        avatar_url (str, optional): URL аватара користувача.
+    :param email: Email користувача.
+    :param avatar_url: URL аватара користувача.
     """
     email: EmailStr
     avatar_url: Optional[str] = None
@@ -17,18 +16,16 @@ class UserCreate(UserBase):
     """
     Схема для створення нового користувача.
 
-    Атрибути:
-        password (str): Пароль користувача.
+    :param password: Пароль користувача.
     """
     password: str
 
 class User(UserBase):
     """
-    Схема для користувача з додатковими полями.
+    Схема даних користувача, що включає додаткову інформацію.
 
-    Атрибути:
-        id (int): Ідентифікатор користувача.
-        is_verified (bool): Статус підтвердження електронної пошти.
+    :param id: ID користувача.
+    :param is_verified: Статус перевірки email.
     """
     id: int
     is_verified: bool
@@ -38,12 +35,11 @@ class User(UserBase):
 
 class Token(BaseModel):
     """
-    Схема для токенів доступу та оновлення.
+    Схема токенів для авторизації.
 
-    Атрибути:
-        access_token (str): Токен доступу.
-        refresh_token (str): Токен для оновлення.
-        token_type (str): Тип токена (наприклад, "bearer").
+    :param access_token: Токен доступу.
+    :param refresh_token: Токен оновлення.
+    :param token_type: Тип токена.
     """
     access_token: str
     refresh_token: str
@@ -51,23 +47,21 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     """
-    Схема для даних токена.
+    Схема даних токена.
 
-    Атрибути:
-        email (str): Електронна пошта користувача.
+    :param email: Email користувача.
     """
     email: str
 
 class ContactBase(BaseModel):
     """
-    Основна схема для контакту.
+    Основна схема даних контакту.
 
-    Атрибути:
-        first_name (str): Ім'я контакту.
-        last_name (str): Прізвище контакту.
-        email (str): Електронна пошта контакту.
-        phone (str, optional): Телефонний номер контакту.
-        birthday (date, optional): Дата народження контакту.
+    :param first_name: Ім'я контакту.
+    :param last_name: Прізвище контакту.
+    :param email: Email контакту.
+    :param phone: Телефон контакту.
+    :param birthday: День народження контакту.
     """
     first_name: str
     last_name: str
@@ -84,12 +78,19 @@ class ContactCreate(ContactBase):
 class ContactUpdate(ContactBase):
     """
     Схема для оновлення контакту.
-
-    Атрибути:
-        first_name (str, optional): Нове ім'я контакту.
-        last_name (str, optional): Нове прізвище контакту.
-        email (str, optional): Нова електронна пошта контакту.
-        phone (str, optional): Новий телефонний номер контакту.
-        birthday (date, optional): Нова дата народження контакту.
     """
     pass
+
+class Contact(ContactBase):
+    """
+    Схема даних контакту, що включає ID.
+
+    :param id: ID контакту.
+    """
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
+
