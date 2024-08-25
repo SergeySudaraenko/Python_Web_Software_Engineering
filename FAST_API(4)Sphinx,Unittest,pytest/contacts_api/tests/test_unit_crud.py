@@ -1,9 +1,8 @@
 import unittest
-from datetime import datetime, timedelta
+from datetime import datetime
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-from crud import (
+from contacts_api.app.crud import  (
     contact_creation_limit_exceeded,
     create_contact,
     get_contacts,
@@ -13,9 +12,10 @@ from crud import (
     get_upcoming_birthdays,
     update_avatar
 )
-from models import Base, Contact, User
-from schemas import ContactCreate, ContactUpdate
-from database import get_db
+from contacts_api.app.models import Base,Contact,User
+from contacts_api.app.schemas import ContactCreate, ContactUpdate
+from contacts_api.app.schemas import get_db
+from sqlalchemy.ext.declarative import declarative_base
 
 # Налаштування для тестової бази даних
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"

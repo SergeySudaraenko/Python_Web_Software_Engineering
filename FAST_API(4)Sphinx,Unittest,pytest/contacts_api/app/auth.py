@@ -1,14 +1,22 @@
+
 from fastapi import HTTPException, status, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+from datetime import datetime, timedelta
 
 from contacts_api.app.database import SessionLocal
-from .models import User
-from .schemas import UserCreate, Token, TokenData
-from .utils import send_verification_email, send_password_reset_email, create_access_token, create_refresh_token, verify_password, hash_password, verify_token
-from datetime import datetime, timedelta
+from contacts_api.app.models import User
+from contacts_api.app.schemas import UserCreate, Token, TokenData
+from contacts_api.app.utils import (
+    send_verification_email, 
+    send_password_reset_email, 
+    create_access_token, 
+    create_refresh_token, 
+    verify_password, 
+    hash_password, 
+    verify_token
+)
 from fastapi.security import OAuth2PasswordBearer
-import os
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 

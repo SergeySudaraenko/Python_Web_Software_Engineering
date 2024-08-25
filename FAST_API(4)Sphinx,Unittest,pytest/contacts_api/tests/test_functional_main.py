@@ -1,11 +1,11 @@
 import pytest
 from fastapi.testclient import TestClient
-from main import app
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database import Base
-from models import User
-from utils import hash_password
+from contacts_api.app.database import Base
+from contacts_api.app.models import User
+from contacts_api.app.utils import hash_password
+from contacts_api.app.main import app
 
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
