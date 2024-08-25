@@ -2,8 +2,8 @@ from fastapi import HTTPException
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
-from .models import Contact, User
-from .schemas import ContactCreate, ContactUpdate
+from models import Contact, User
+from schemas import ContactCreate, ContactUpdate
 
 def contact_creation_limit_exceeded(db: Session, user_id: int) -> bool:
     """

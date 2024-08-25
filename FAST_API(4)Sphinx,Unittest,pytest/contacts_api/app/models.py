@@ -1,6 +1,10 @@
 from sqlalchemy import Column, Integer, String, Date, Boolean
 from sqlalchemy.sql import func
 from .database import Base
+# try:
+#     from .database import Base
+# except Exception:
+#     pass
 
 class User(Base):
     """
@@ -45,3 +49,4 @@ class Contact(Base):
     birthday = Column(Date, index=True)
     owner_id = Column(Integer, index=True)
     created_at = Column(Date, default=func.now())
+
